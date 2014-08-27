@@ -5,6 +5,7 @@ import java.util.concurrent.Executors
 import java.util.zip.ZipFile
 import scala.collection.JavaConversions._
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 import scala.concurrent._
 import scala.util.{Failure, Success}
 import scala.xml.XML
@@ -76,7 +77,7 @@ class GraphApi(token: String, archive: File, update: (Int) => Unit) {
     gdf
   }
 
-  def save(file: File): Unit = guessGdf.save(file)
+  def save(file: File) = guessGdf.save(file)
 
   private def getEdge(node1: Node, node2: Node) = {
     facebookClient.fetchConnection(node1.id + "/friends/" + node2.id, classOf[User]).getData.isEmpty match {

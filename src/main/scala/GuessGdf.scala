@@ -5,7 +5,7 @@ class GuessGdf() {
   val nodes = new ArrayBuffer[Node]()
   val edges = new ArrayBuffer[Edge]()
 
-  def save(file: File): Unit = {
+  def save(file: File) = {
     val output = new PrintWriter(file)
 
     output.println("nodedef> name,id VARCHAR(15),strength FLOAT")
