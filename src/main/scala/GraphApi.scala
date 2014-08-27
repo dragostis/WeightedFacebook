@@ -48,36 +48,44 @@ class GraphApi(token: String, archive: File, update: (Int) => Unit) {
 
     implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(numberOfThreads))
 
-    @volatile var tick = 0
-    var ticks = 0
+    val edges = new ArrayBuffer[Option[Edge]]
 
-    for (i <- 0 until gdf.nodes.size) {
-      for (j <- (i + 1) until gdf.nodes.size) {
+    val numberOfNodes: Int = gdf.nodes.size
+    val numberOfEdges = numberOfNodes * (numberOfNodes - 1) / 2
+
+    for (i <- 0 until numberOfNodes) {
+      for (j <- (i + 1) until numberOfNodes) {
         future {
           val edge = getEdge(gdf.nodes(i), gdf.nodes(j))
 
-          this.synchronized { tick += 1 }
-
           edge
         } onComplete {
-          case Success(edge) => this.synchronized { gdf.edges ++= edge }
+          case Success(edge) => this.synchronized { edges += edge }
           case Failure(ex) => println(ex.getMessage)
         }
-
-        ticks += 1
       }
     }
 
-    while (tick != ticks) {
-      update((tick / ticks.toFloat * 90).ceil.toInt + 10)
+    updateProgressBar(edges, numberOfEdges)
 
-      Thread.sleep(300)
-    }
+    gdf.edges ++= edges.flatten
 
     gdf
   }
 
   def save(file: File) = guessGdf.save(file)
+
+  private def updateProgressBar(edges: ArrayBuffer[Option[Edge]], numberOfEdges: Int): Unit = {
+    if (edges.size != numberOfEdges) {
+      update((edges.size / numberOfEdges.toFloat * 90).ceil.toInt + 10)
+
+      Thread.sleep(300)
+
+      updateProgressBar(edges, numberOfEdges)
+    }
+
+    update(100)
+  }
 
   private def getEdge(node1: Node, node2: Node) = {
     facebookClient.fetchConnection(node1.id + "/friends/" + node2.id, classOf[User]).getData.isEmpty match {
