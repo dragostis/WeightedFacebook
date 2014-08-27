@@ -86,7 +86,7 @@ object WeightedFacebook extends SimpleSwingApplication {
               }
 
               graph onSuccess {
-                case g =>
+                case g: GraphApi =>
                   try {
                     Option(new FileChooser {
                       fileSelectionMode = FileChooser.SelectionMode.FilesOnly
