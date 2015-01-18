@@ -107,9 +107,9 @@ object WeightedFacebook extends SimpleSwingApplication {
           case None => openFile(archiveField.text)
         }) match {
           case (Some(graph), Some(archive)) => {
-            val solver = new Solver(graph, archive)
-
             try {
+              val solver = new Solver(graph, archive)
+
               Option(new FileChooser {
                 fileSelectionMode = FileChooser.SelectionMode.FilesOnly
                 fileFilter = new FileFilter {
@@ -126,6 +126,7 @@ object WeightedFacebook extends SimpleSwingApplication {
               }
             } catch {
               case ex: IOException => showError("There was a problem saving your file.")
+              case ex: NoSuchElementException => showError("The archive does not contain the expected files.")
             }
           }
         }
