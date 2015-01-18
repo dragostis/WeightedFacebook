@@ -17,12 +17,17 @@ class Solver(graph: File, archive: File) {
     }.next()
     val total = messages.map(_._2).sum.toFloat
 
-    val (nodeLines, edgeLines) = Source.fromFile(graph).getLines().span(line => !line.startsWith("edgedef"))
+    val (nodeLines, edgeLines) = Source.fromFile(graph)("UTF-8").getLines().span(line => !line.startsWith("edgedef"))
 
     val nodes = nodeLines.toList.tail.map { line =>
       val data = line.split(",")
 
-      new Node(data(1), data(0), messages(data(1)) / total)
+      val messageCount = messages.get(data(1)) match {
+        case Some(count) => count
+        case None => 0
+      }
+
+      new Node(data(1), data(0), messageCount / total)
     }
 
     val edges = edgeLines.toList.tail.map { line =>
