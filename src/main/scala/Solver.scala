@@ -15,7 +15,7 @@ class Solver(graph: File, archive: File) {
 
       users.groupBy(u => u).mapValues(_.size)
     }.next()
-    val total = messages.reduceLeft[Int]((sum, pair) => sum + pair._2).toFloat
+    val total = messages.map(_._2).sum.toFloat
 
     val (nodeLines, edgeLines) = Source.fromFile(graph).getLines().span(line => !line.startsWith("edgedef"))
 
