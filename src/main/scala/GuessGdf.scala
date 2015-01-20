@@ -5,8 +5,8 @@ class GuessGdf(nodes: List[Node], edges: List[Edge]) {
   def save(file: File) = {
     val output = new PrintWriter(file)
 
-    output.println("nodedef> name,id VARCHAR(15),strength FLOAT")
-    nodes.foreach(node => output.println(node.name + "," + node.id + f",${node.strength}%.3f"))
+    output.println("nodedef> name VARCHAR,label VARCHAR,strength FLOAT")
+    nodes.foreach(node => output.println(node.id + "," + node.name + f",${node.strength}%.3f"))
 
     output.println("edgedef> node1,node2")
     edges.foreach(edge => output.println(edge.node1 + "," + edge.node2))
